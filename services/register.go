@@ -1,10 +1,9 @@
-package api
+package services
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 )
@@ -12,9 +11,10 @@ import (
 //keypairs like ---  {"username": "zcollin1", "password":"test", "number": "734515513", "email":"collinswhatever@live"}
 
 var userIdCounter uint32 = 0
-var userStore = []StoredUser{}
+var userStore = []User{}
 
-type InputUser struct {
+type User struct {
+	Id           uint32 `json:"id"`
 	Username     string 	`json:"username"`
 	Password     string 	`json:"password"`
 	Number	     string 	`json:"number"`
@@ -24,16 +24,8 @@ type InputUser struct {
 	//Contacts     []&User 	`json:"contacts"`
 }
 
-type StoredUser struct {
-	Id           uint32 `json:"id"`
-	Username     string 	`json:"username"`
-	Password     string 	`json:"password"`
-	Number	     string 	`json:"number"`
-	Email 	     string	`json:"email"`
-}
-
-func createUserHandler(w http.ResponseWriter, r *http.Request) {
-	p := StoredUser{}
+func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+	p := User{}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -57,30 +49,28 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := StoredUser{
+	u := User{
 		Id:           	userIdCounter,
 		Username:     	p.Username,
 		Number: 	p.Number,
 	}
 
 	userStore = append(userStore, u)
-
 	userIdCounter += 1
-
 	w.WriteHeader(http.StatusCreated)
 }
 
+//Mke faster, not linear search here
 func validateUniqueness(username string) error {
 	for _, u := range userStore {
 		if u.Username == username {
 			return errors.New("Username is already used")
 		}
 	}
-
 	return nil
 }
 
-func listUsersHandler(w http.ResponseWriter, r *http.Request) {
+func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 	users, err := json.Marshal(userStore)
 
 	if err != nil {
@@ -89,11 +79,4 @@ func listUsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(users)
-}
-
-func Handlers() *mux.Router {
-	r := mux.NewRouter()
-	r.HandleFunc("/users", createUserHandler).Methods("POST")
-	r.HandleFunc("/users", listUsersHandler).Methods("GET")
-	return r
 }
