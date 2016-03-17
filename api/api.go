@@ -9,21 +9,28 @@ import (
 	"net/http"
 )
 
-//keypairs like ---  {"username": "dennis", "balance": 200}
+//keypairs like ---  {"username": "zcollin1", "password":"test", "number": "734515513", "email":"collinswhatever@live"}
+
+var userIdCounter uint32 = 0
+var userStore = []StoredUser{}
 
 type InputUser struct {
-	Name	     string `json:"name"`
-	Number	     string `json:"number"`
+	Username     string 	`json:"username"`
+	Password     string 	`json:"password"`
+	Number	     string 	`json:"number"`
+	Email 	     string	`json:"email"`
+	//Photo byte?
+	//Calendar   NA
+	//Contacts     []&User 	`json:"contacts"`
 }
 
 type StoredUser struct {
 	Id           uint32 `json:"id"`
-	Name 	     string `json:"name"`
-	Number	     string `json:"number"`
+	Username     string 	`json:"username"`
+	Password     string 	`json:"password"`
+	Number	     string 	`json:"number"`
+	Email 	     string	`json:"email"`
 }
-
-var userIdCounter uint32 = 0
-var userStore = []StoredUser{}
 
 func createUserHandler(w http.ResponseWriter, r *http.Request) {
 	p := StoredUser{}
@@ -42,7 +49,7 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = validateUniqueness(p.Name)
+	err = validateUniqueness(p.Username)
 
 	if err != nil {
 		fmt.Printf("Error: %s\n", err)
@@ -52,7 +59,7 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	u := StoredUser{
 		Id:           	userIdCounter,
-		Name:     	p.Name,
+		Username:     	p.Username,
 		Number: 	p.Number,
 	}
 
@@ -65,7 +72,7 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 
 func validateUniqueness(username string) error {
 	for _, u := range userStore {
-		if u.Name == username {
+		if u.Username == username {
 			return errors.New("Username is already used")
 		}
 	}

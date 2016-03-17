@@ -16,6 +16,7 @@
       <root url="file://$PROJECT_DIR$/../Wiki/.git" />
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/net/.git" />
       <root url="file://$PROJECT_DIR$/../../../gopkg.in/mgo.v2/.git" />
+      <root url="file://$PROJECT_DIR$/.git" />
       <root url="file://$PROJECT_DIR$/../../bmizerany/pat/.git" />
       <root url="file://$PROJECT_DIR$/../Hub_DevBranch/html/welcome/.git" />
       <root url="file://$PROJECT_DIR$/../../mikejs/gomongo/.git" />
